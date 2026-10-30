@@ -50,6 +50,18 @@ For completion and validation in your editor (VS Code, Red Hat YAML extension), 
 # yaml-language-server: $schema=https://raw.githubusercontent.com/kuroctl/kuro/main/shared/prefab/schema/prefab.v1.schema.json
 ```
 
+## Store
+
+Every merge on `main` publishes this repository as a **prefab store** on GitHub Pages
+(`https://kuroctl.github.io/prefabs/`): a signed `index.json` (minisign, the key of Kuro's
+releases) and one `.kprefab` archive per version. A Kuro installation lists this store in the
+panel (Prefabs › Store) and installs a version in one click: the API checks the index signature,
+then the SHA-256 of the downloaded archive against the index. Only valid prefabs are published; a
+version that requires a newer Kuro (`requires.kuro`) is shown but cannot be installed.
+
+The same layout works for a private store (a company's own prefabs): point a Kuro at it with a
+`[[prefabs.stores]]` entry (`url`, `public_key`, optional `token`).
+
 ## Checking
 
 The JSON Schema does not cover everything (template references, paths under volumes, default

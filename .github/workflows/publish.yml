@@ -1,0 +1,74 @@
+# Store de prefabs (Kuro, ADR-0042) : à chaque fusion sur `main`, les prefabs valides sont
+# publiés sur GitHub Pages sous la forme d'un `index.json` signé (minisign) et d'une archive
+# `.kprefab` par version. Une installation de Kuro lit cet index (store `official`) et vérifie
+# la signature avec la clé publique des releases de Kuro, puis la somme SHA-256 de chaque
+# archive installée.
+#
+# Secrets attendus : `MINISIGN_SECRET_KEY` (clé secrète minisign, la même que celle des releases
+# de Kuro) et `MINISIGN_PASSWORD`. Sans eux, rien n'est publié.
+name: publish
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Index signé et archives
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: prefabs
+      # L'outil de construction vient de la branche principale de Kuro : le format qu'elle lit.
+      - uses: actions/checkout@v7
+        with:
+          repository: kuroctl/kuro
+          path: kuro
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: kuro
+      - name: Construction
+        run: cargo run --locked --manifest-path kuro/Cargo.toml -p kuro-prefab --bin kuro-prefab-index -- prefabs dist
+      - name: Signature de l'index
+        env:
+          MINISIGN_SECRET_KEY: ${{ secrets.MINISIGN_SECRET_KEY }}
+          MINISIGN_PASSWORD: ${{ secrets.MINISIGN_PASSWORD }}
+        run: |
+          if [ -z "$MINISIGN_SECRET_KEY" ]; then
+            echo "MINISIGN_SECRET_KEY is not set: the store index cannot be signed" >&2
+            exit 1
+          fi
+          sudo apt-get install -y minisign
+          umask 077
+          printf '%s\n' "$MINISIGN_SECRET_KEY" > "$RUNNER_TEMP/minisign.key"
+          printf '%s\n' "$MINISIGN_PASSWORD" | minisign -S -s "$RUNNER_TEMP/minisign.key" \
+            -m dist/index.json -t "kuro prefabs $(git -C prefabs rev-parse --short HEAD)"
+          rm -f "$RUNNER_TEMP/minisign.key"
+          # Pas de page d'accueil : la racine sert l'index tel quel.
+          cp prefabs/README.md dist/README.md
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+  deploy:
+    name: Publication sur GitHub Pages
+    needs: build
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
