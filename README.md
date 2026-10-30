@@ -1,70 +1,71 @@
-# Prefabs Kuro
+# Kuro prefabs
 
-Modèles de serveurs (jeux, sites web, outils) pour [Kuro](https://github.com/kuroctl/kuro), le
-panel de gestion de serveurs. Ce dépôt est inclus dans Kuro comme sous-module (`prefabs/`) :
-chaque version de Kuro livre les prefabs du commit qu'elle épingle, importés au démarrage de
-l'API comme prefabs officiels.
+Server templates (games, web sites, tools) for [Kuro](https://github.com/kuroctl/kuro), the
+server management panel. This repository is included in Kuro as a submodule (`prefabs/`): each
+Kuro release ships the prefabs of the commit it pins, imported as official prefabs when the API
+starts.
 
-Un prefab se crée aussi depuis le **Prefab Studio** du panel (éditeur validé pendant la saisie,
-essai sur un nœud de test), puis se publie dans le catalogue de l'installation. Pour le proposer à
-tout le monde, ajoutez son dossier ici par une pull request.
+A prefab can also be made in the panel's **Prefab Studio** (editor validated as you type, trial on
+a test node), then published to the catalog of an installation. To offer it to everyone, add its
+folder here through a pull request: see [CONTRIBUTING.md](CONTRIBUTING.md) (rules, checks,
+working from Kuro's submodule).
 
-| Prefab | Services | Points illustrés |
+| Prefab | Services | What it shows |
 |---|---|---|
-| `minecraft-java` | 1 | image qui s'installe seule, `server.properties` en `managed-keys`, mods et plugins en `download` (Modrinth, CurseForge, téléversement), sauvegarde à chaud (`save-off` / `save-all flush` / `save-on`, journaux exclus) |
-| `wordpress` | 2 (`web`, `db`) | réseau privé entre services, secret généré partagé, healthcheck, fichiers PHP éditables |
-| `terraria` | 1 | installation `download` (sha256 épinglé) + `extract` (`subdir`, `executable`) + `remove`, `serverconfig.txt` en `managed-keys` (`ini`), `HOME` sur le volume, sauvegarde après `save` |
-| `ark-survival-ascended` | 1 | installation `steamcmd`, `Game.ini` libre, `GameUserSettings.ini` en `managed-keys`, mods CurseForge en `reference` (brouillon : image d'exécution à choisir) |
-| `minecraft-bedrock` | 1 | image qui s'installe seule, transport RakNet (un seul port UDP), réglages par variables d'environnement, sauvegarde à chaud (`save hold` / `save query` / `save resume`), add-ons CurseForge en `extract` (packs rangés d'après leur `manifest.json`, inscrits dans `world_*_packs.json`) |
-| `valheim` | 1 | `steamcmd`, image Pterodactyl gardée avec son point d'entrée (`STARTUP`, réglages par l'environnement), arrêt par SIGINT |
-| `project-zomboid` | 1 | `steamcmd`, JVM livrée avec le jeu, `kuro.ini` en `managed-keys` (`ini` sans sections), emplacement Steam Workshop en `reference` (`WorkshopItems`), identifiants des mods saisis par objet (`fields`, `Mods=`), proposés d'après la description de l'objet (`prefill`) |
-| `rust` | 1 | `steamcmd` puis `script` (bibliothèque Steam), lancement depuis le dossier du jeu par `sh -c` avec les valeurs en arguments séparés, WebRCON interne |
-| `enshrouded` | 1 | serveur Windows sous Proton GE, journal redirigé vers la console (brouillon : `steamcmd` doit pouvoir forcer la plateforme Windows) |
-| `arma-3` | 1 | `steamcmd` avec le compte Steam de l'installation (`login: account`), `server.cfg` en `template` regénéré à chaque démarrage, `basic.cfg` libre (brouillon : pas encore essayé sur un vrai nœud) |
-| `fivem` | 1 | build épinglé en `download` + `extract` d'un `.tar.xz` (liens internes recopiés), port `tcp+udp` sur une allocation, `kuro.cfg` en `template` chargé par un `server.cfg` libre, ressources de base à un commit fixé (brouillon : pas encore essayé avec une vraie licence) |
-| `redm` | 1 | variante RedM (Red Dead Redemption 2) du prefab `fivem`, même installation, jeu `rdr3` (brouillon : pas encore essayé avec une vraie licence) |
-| `counter-strike-2` | 1 | `steamcmd` (app 730, anonyme) puis `script` (bibliothèque Steam), lancement `sh -c` avec arguments séparés, mode de jeu par `+game_alias`, jeton GSLT facultatif (brouillon : pas encore essayé) |
-| `nextcloud` | 2 (`web`, `db`) | site web, installation par le point d'entrée de l'image, `template` PHP avec `{{ server.web_host }}`, actions `occ` dont `cron` planifiable, arrêt par le signal de l'image (brouillon) |
-| `owncloud-ocis` | 1 | site web, `ocis init` en `script` dans l'image officielle (point d'entrée vidé), configuration générée gardée à la réinstallation (brouillon) |
-| `openclaw` | 1 | site web, `openclaw.json` en `managed-keys` JSON (origine du site, proxy de confiance), actions d'approbation d'appareil, prêt par healthcheck (démarre sur un nœud Linux ; interface publique pas encore essayée) |
-| `hermes-agent` | 1 | site web, image s6-overlay lancée sans root (`/run` en `writable`), `config.yaml` en `managed-keys` YAML, arrêt par le signal de l'image (démarre sur un nœud Linux ; HTTPS public pas encore essayé) |
+| `minecraft-java` | 1 | self-installing image, `server.properties` as `managed-keys`, mods and plugins as `download` (Modrinth, CurseForge, upload), hot backup (`save-off` / `save-all flush` / `save-on`, logs excluded) |
+| `wordpress` | 2 (`web`, `db`) | private network between services, shared generated secret, healthcheck, editable PHP files |
+| `terraria` | 1 | `download` (pinned sha256) + `extract` (`subdir`, `executable`) + `remove` install, `serverconfig.txt` as `managed-keys` (`ini`), `HOME` on the volume, backup after `save` |
+| `ark-survival-ascended` | 1 | `steamcmd` install, free `Game.ini`, `GameUserSettings.ini` as `managed-keys`, CurseForge mods as `reference` (draft: runtime image to choose) |
+| `minecraft-bedrock` | 1 | self-installing image, RakNet transport (a single UDP port), settings through environment variables, hot backup (`save hold` / `save query` / `save resume`), CurseForge add-ons as `extract` (packs sorted by their `manifest.json`, registered in `world_*_packs.json`) |
+| `valheim` | 1 | `steamcmd`, Pterodactyl image kept with its entrypoint (`STARTUP`, settings through the environment), stop by SIGINT |
+| `project-zomboid` | 1 | `steamcmd`, JVM shipped with the game, `kuro.ini` as `managed-keys` (`ini` without sections), Steam Workshop slot as `reference` (`WorkshopItems`), mod ids entered per item (`fields`, `Mods=`), suggested from the item description (`prefill`) |
+| `rust` | 1 | `steamcmd` then `script` (Steam library), started from the game folder by `sh -c` with values as separate arguments, internal WebRCON |
+| `enshrouded` | 1 | Windows server under Proton GE, log redirected to the console (draft: `steamcmd` must be able to force the Windows platform) |
+| `arma-3` | 1 | `steamcmd` with the installation's Steam account (`login: account`), `server.cfg` as `template` rewritten on every start, free `basic.cfg` (draft: not yet tried on a real node) |
+| `fivem` | 1 | pinned build as `download` + `extract` of a `.tar.xz` (internal links copied), `tcp+udp` port on one allocation, `kuro.cfg` as `template` loaded by a free `server.cfg`, base resources at a fixed commit (draft: not yet tried with a real license) |
+| `redm` | 1 | RedM (Red Dead Redemption 2) variant of the `fivem` prefab, same install, game `rdr3` (draft: not yet tried with a real license) |
+| `counter-strike-2` | 1 | `steamcmd` (app 730, anonymous) then `script` (Steam library), `sh -c` start with separate arguments, game mode through `+game_alias`, optional GSLT token (draft: not yet tried) |
+| `nextcloud` | 2 (`web`, `db`) | web site, install by the image's entrypoint, PHP `template` with `{{ server.web_host }}`, `occ` actions including a schedulable `cron`, stop by the image's signal (draft) |
+| `owncloud-ocis` | 1 | web site, `ocis init` as `script` in the official image (entrypoint cleared), generated config kept on reinstall (draft) |
+| `openclaw` | 1 | web site, `openclaw.json` as JSON `managed-keys` (site origin, trusted proxy), device approval actions, ready by healthcheck (starts on a Linux node; public interface not yet tried) |
+| `hermes-agent` | 1 | web site, s6-overlay image run without root (`/run` as `writable`), `config.yaml` as YAML `managed-keys`, stop by the image's signal (starts on a Linux node; public HTTPS not yet tried) |
 
-## Structure
+## Layout
 
 ```
-<dossier>/
+<folder>/
 ├── prefab.yaml         manifest (format kuro.prefab/v1)
-├── locales/en.json     obligatoire (langue de repli), puis fr.json…
-├── templates/          gabarits de fichiers
-└── assets/             icône, bannière, vignette (PNG, JPEG ou WebP)
+├── locales/en.json     required (fallback language), then fr.json…
+├── templates/          file templates
+└── assets/             icon, banner, thumbnail (PNG, JPEG or WebP)
 ```
 
-Le nom du dossier est libre ; l'identifiant du prefab est l'`id` de son manifest. Un prefab publié
-est **immuable** par `id` + `version` : changer son contenu demande une nouvelle version.
+The folder name is free; the prefab's identity is the `id` of its manifest. A published prefab is
+**immutable** by `id` + `version`: changing its content needs a new version.
 
-Pour l'éditer avec autocomplétion et validation (VS Code, extension YAML de Red Hat), en tête de
-`prefab.yaml` :
+For completion and validation in your editor (VS Code, Red Hat YAML extension), at the top of
+`prefab.yaml`:
 
 ```yaml
 # yaml-language-server: $schema=https://raw.githubusercontent.com/kuroctl/kuro/main/shared/prefab/schema/prefab.v1.schema.json
 ```
 
-## Vérifier
+## Checking
 
-Le JSON Schema ne couvre pas tout (références de gabarits, chemins sous les volumes, bornes des
-valeurs par défaut, clés de traduction). La CI charge chaque dossier exactement comme l'import de
-Kuro, avec la crate `kuro-prefab` ; en local, depuis un clone de Kuro :
+The JSON Schema does not cover everything (template references, paths under volumes, default
+value bounds, translation keys). CI loads every folder exactly like Kuro's import, with the
+`kuro-prefab` crate; locally, from a Kuro clone:
 
 ```bash
-cargo run -p kuro-prefab --bin kuro-prefab-check -- ../kuro-prefabs
+cargo run -p kuro-prefab --bin kuro-prefab-check -- prefabs
 ```
 
 ## Images
 
-`assets/` : visuels des éditeurs (Steam pour les jeux Steam) ou de la communauté, à remplacer si
-leur usage n'est pas autorisé pour votre déploiement.
+`assets/`: publisher artwork (Steam for Steam games) or community artwork, to replace if its use
+is not allowed for your deployment.
 
-Un jeu vendu sur Steam déclare `steam: { app: <id> }` : l'identifiant **du jeu** sur le magasin
-(730 pour Counter-Strike 2, 892970 pour Valheim), pas celui de son serveur dédié. Le Studio en
-importe alors les images (« Importer depuis Steam »). Comme `assets`, cette rubrique est
-cosmétique : l'ajouter ne demande pas de nouvelle version.
+A game sold on Steam declares `steam: { app: <id> }`: the id of **the game** on the store (730 for
+Counter-Strike 2, 892970 for Valheim), not the id of its dedicated server. The Studio then imports
+its images ("Import from Steam"). Like `assets`, this section is cosmetic: adding it does not need
+a new version.
