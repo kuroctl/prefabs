@@ -12,7 +12,10 @@ guide says how to write a prefab that will be accepted, and what gets it refused
 
 The panel's Studio (Prefabs › Studio) validates as you type, shows the settings form as an admin
 will see it, imports a `docker-compose.yml` or a Pterodactyl egg, sets the images (Steam's for a
-game declaring `steam.app`), and **tries the prefab on a test node**. Once happy, copy its files
+game declaring `steam.app`), and **tries the prefab on a test node**. Once happy, **Export** the
+draft (a `.kprefab` zip with a `<id>/` folder: manifest, translations, templates, images declared)
+and unzip it here, or in development let "Publish" write it straight into the `prefabs/`
+submodule (`prefabs.publish_to_dir`, set by `cargo xtask dev`). Otherwise copy its files
 into a folder of this repository, add the images, and open a pull request.
 
 An AI agent can do all of this through Kuro's MCP server (create, validate, try, read the
