@@ -29,3 +29,17 @@ jobs:
         with:
           workspaces: kuro
       - run: cargo run --locked --manifest-path kuro/Cargo.toml -p kuro-prefab --bin kuro-prefab-check -- prefabs
+      # Une image du miroir citée par un manifest doit être listée dans `images/mirror.txt` (ADR-0048).
+      - name: Images du miroir listées
+        working-directory: prefabs
+        run: |
+          set -eu
+          missing=0
+          for image in $(grep -rhoE 'ghcr\.io/kuroctl/mirror/[^[:space:]"]+' --include=prefab.yaml . | sort -u); do
+            source_path="${image#ghcr.io/kuroctl/mirror/}"
+            if ! grep -qE "^[^#[:space:]]+/${source_path//./\\.}\$" images/mirror.txt; then
+              echo "not in images/mirror.txt: $image" >&2
+              missing=1
+            fi
+          done
+          exit "$missing"

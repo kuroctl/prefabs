@@ -6,7 +6,7 @@
 # réinstallation, sans quoi les clients à jour ne peuvent plus se connecter.
 schema: kuro.prefab/v1
 id: rust
-version: 1.1.0
+version: 1.1.1
 category: game
 tags: [rust, survival, steam]
 authors:
@@ -27,7 +27,7 @@ steam: { app: 252490 }
 
 services:
   server:
-    image: docker.io/cm2network/steamcmd@sha256:6420fb40313fc00ee0d7fe1ae02c4c32f2b085980f5795b7171022d3409e29fb
+    image: ghcr.io/kuroctl/mirror/cm2network/steamcmd@sha256:6420fb40313fc00ee0d7fe1ae02c4c32f2b085980f5795b7171022d3409e29fb
     # Rust résout ses chemins (server/<identité>) depuis le dossier courant : le shell ne fait que
     # s'y placer, les valeurs restent des arguments séparés ("$@"), jamais collées dans le script.
     command:

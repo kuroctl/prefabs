@@ -7,7 +7,7 @@
 # demanderaient le compte Steam dans l'environnement du serveur) : Kuro met à jour en réinstallant.
 schema: kuro.prefab/v1
 id: arma-3
-version: 0.1.0
+version: 0.1.1
 category: game
 tags: [arma-3, military, simulation, steam]
 authors:
@@ -29,7 +29,7 @@ steam: { app: 107410 }
 services:
   server:
     # Épinglée par empreinte : le tag `games:arma3` est mis à jour en continu.
-    image: ghcr.io/ptero-eggs/games@sha256:c14eac53c77b73856ff241bc71b5a02472d17ab7a9cc061ccf8d13c27070bb90
+    image: ghcr.io/kuroctl/mirror/ptero-eggs/games@sha256:c14eac53c77b73856ff241bc71b5a02472d17ab7a9cc061ccf8d13c27070bb90
     env:
       STARTUP: './arma3server_x64 -ip=0.0.0.0 -port=${SERVER_PORT} -profiles=./serverprofile -bepath=./ -cfg=basic.cfg -config=server.cfg -noLogs'
       SERVER_PORT: "{{ ports.game.container }}"

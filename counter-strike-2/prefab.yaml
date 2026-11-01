@@ -5,7 +5,7 @@
 # réseau local et n'apparaît pas dans la liste de Steam.
 schema: kuro.prefab/v1
 id: counter-strike-2
-version: 1.0.1
+version: 1.0.2
 category: game
 tags: [counter-strike, cs2, fps, steam]
 authors:
@@ -27,7 +27,7 @@ steam: { app: 730 }
 
 services:
   server:
-    image: docker.io/cm2network/steamcmd@sha256:6420fb40313fc00ee0d7fe1ae02c4c32f2b085980f5795b7171022d3409e29fb
+    image: ghcr.io/kuroctl/mirror/cm2network/steamcmd@sha256:6420fb40313fc00ee0d7fe1ae02c4c32f2b085980f5795b7171022d3409e29fb
     # Le shell ne fait que se placer dans le dossier du binaire ; les valeurs restent des arguments
     # séparés ("$@"), jamais collés dans le script.
     command:

@@ -7,7 +7,7 @@
 # contenir (nom du serveur) passe par `kuro.cfg`, regénéré à chaque démarrage.
 schema: kuro.prefab/v1
 id: fivem
-version: 0.1.0
+version: 0.1.1
 category: game
 tags: [fivem, gta-v, redm, roleplay]
 authors:
@@ -28,7 +28,7 @@ steam: { app: 271590 }
 services:
   server:
     # Épinglée par empreinte : le tag `yolks:debian` est mis à jour en continu.
-    image: ghcr.io/ptero-eggs/yolks@sha256:3a31e5b23e671dfa8c0f3487003cc6dc6e2f44b5fac1212e194e0954eac8bd71
+    image: ghcr.io/kuroctl/mirror/ptero-eggs/yolks@sha256:3a31e5b23e671dfa8c0f3487003cc6dc6e2f44b5fac1212e194e0954eac8bd71
     env:
       # Sans `server.cfg` quand txAdmin est activé : txAdmin gère alors le serveur (port 40120).
       STARTUP: '$(pwd)/alpine/opt/cfx-server/ld-musl-x86_64.so.1 --library-path "$(pwd)/alpine/usr/lib/v8/:$(pwd)/alpine/lib/:$(pwd)/alpine/usr/lib/" -- $(pwd)/alpine/opt/cfx-server/FXServer +set citizen_dir $(pwd)/alpine/opt/cfx-server/citizen/ +set sv_licenseKey ${FIVEM_LICENSE} +set steam_webApiKey ${STEAM_WEBAPIKEY} +set sv_maxplayers ${MAX_PLAYERS} $( [ "$TXADMIN_ENABLE" = "1" ] || printf %s "+exec server.cfg" )'
@@ -52,7 +52,7 @@ services:
 install:
   service: server
   # Image des eggs Pterodactyl pour l'installation : `git` y est, lancé sans root.
-  image: ghcr.io/ptero-eggs/installers@sha256:084e7a28d9902d054b35bcad7c547bcd3b5739040b9e0f5bfe63bb18ce021423
+  image: ghcr.io/kuroctl/mirror/ptero-eggs/installers@sha256:084e7a28d9902d054b35bcad7c547bcd3b5739040b9e0f5bfe63bb18ce021423
   steps:
     # Build « recommended » 35245 ; une version plus récente = une nouvelle version du prefab.
     - download:

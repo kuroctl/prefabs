@@ -1,0 +1,48 @@
+# Miroir des images communautaires (Kuro, ADR-0048) : chaque image de `images/mirror.txt` est
+# copiée telle quelle (même digest, plateformes comprises) dans `ghcr.io/kuroctl/mirror/`, sous le
+# tag `sha256-<empreinte>`. Une disparition en amont ne casse plus l'installation d'un prefab.
+#
+# Un paquet GHCR créé par ce workflow est privé : le rendre public une fois (Package settings →
+# Change visibility), sinon les nœuds ne peuvent pas le télécharger.
+name: mirror
+
+on:
+  push:
+    branches: [main]
+    paths: [images/mirror.txt, .github/workflows/mirror.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  mirror:
+    name: Copie vers ghcr.io/kuroctl/mirror
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: imjasonh/setup-crane@v0.4
+      - name: Copie
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -eu
+          printf '%s\n' "$GHCR_TOKEN" | crane auth login ghcr.io -u "${{ github.actor }}" --password-stdin
+          grep -vE '^\s*(#|$)' images/mirror.txt | while read -r source; do
+            case "$source" in
+              *@sha256:*) ;;
+              *) echo "not pinned by digest: $source" >&2; exit 1 ;;
+            esac
+            repository="${source%@*}"
+            digest="${source#*@}"
+            target="ghcr.io/kuroctl/mirror/${repository#*/}:${digest/:/-}"
+            if [ "$(crane digest "$target" 2>/dev/null || true)" = "$digest" ]; then
+              echo "= $target"
+              continue
+            fi
+            crane copy "$source" "$target"
+            # Le digest copié doit être celui que citent les manifests.
+            test "$(crane digest "$target")" = "$digest"
+            echo "+ $target"
+          done

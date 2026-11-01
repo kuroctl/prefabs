@@ -5,7 +5,7 @@
 # les réglages y arrivent par l'environnement, jamais collés dans la commande (ADR-0027).
 schema: kuro.prefab/v1
 id: valheim
-version: 1.1.0
+version: 1.1.1
 category: game
 tags: [valheim, survival, steam]
 authors:
@@ -26,7 +26,7 @@ steam: { app: 892970 }
 services:
   server:
     # Épinglée par empreinte : le tag `games:valheim` est mis à jour en continu.
-    image: ghcr.io/ptero-eggs/games@sha256:5ade5bcfc0c00ad26fd1bac8ff35b6e5e48d8c6cb70ddb5ba72f448520956e24
+    image: ghcr.io/kuroctl/mirror/ptero-eggs/games@sha256:5ade5bcfc0c00ad26fd1bac8ff35b6e5e48d8c6cb70ddb5ba72f448520956e24
     env:
       STARTUP: './valheim_server.x86_64 -nographics -batchmode -name "${SERVER_NAME}" -port ${SERVER_PORT} -world "${WORLD_NAME}" -password "${SERVER_PASS}" -public ${PUBLIC} -preset ${PRESET} -saveinterval ${SAVE_INTERVAL} -backups ${BACKUPS} -savedir /home/container/saves'
       # Mises à jour faites par Kuro (réinstallation), jamais par le point d'entrée de l'image.
