@@ -1,13 +1,13 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/kuroctl/kuro/main/shared/prefab/schema/prefab.v1.schema.json
 # Enshrouded : le serveur dédié (app Steam 2278520) n'existe qu'en version Windows ; il tourne sous
-# Linux avec Proton GE 11, fourni par l'image SteamCMD Proton des eggs Pterodactyl (utilisateur
-# 1000, Proton dans /usr/local/bin, tini en point d'entrée), utilisée seulement comme
-# environnement d'exécution (ADR-0032). Lancement : templates/start.sh.
+# Linux avec Proton GE 11, fourni par l'image `runtime-proton-ge11` de Kuro (Debian 13,
+# utilisateur 1000, Proton dans /opt/proton, tini en point d'entrée ; ADR-0032, ADR-0048).
+# Lancement : templates/start.sh.
 # Essayé sous les contraintes de Kuro (racine en lecture seule, sans root, capacités retirées) :
 # « HostOnline » en quelques secondes, monde enregistré à l'arrêt par SIGINT.
 schema: kuro.prefab/v1
 id: enshrouded
-version: 0.4.1
+version: 0.5.0
 category: game
 tags: [enshrouded, survival, steam]
 authors:
@@ -28,9 +28,9 @@ steam: { app: 1203620 }
 
 services:
   server:
-    # Tag `proton` (GE-Proton 11-11) épinglé par empreinte. Proton 10 refuse la bibliothèque Steam
-    # actuelle (« Version Mismatch »).
-    image: ghcr.io/kuroctl/mirror/parkervcp/steamcmd@sha256:543ac8eced2e305146b77d7a717e6432c5c35d3f05777709a0c967200d4e97fd
+    # GE-Proton 11-11 (tag `1-2026.11.01-2`), épinglé par empreinte. Proton 10 refuse la
+    # bibliothèque Steam actuelle (« Version Mismatch »).
+    image: ghcr.io/kuroctl/runtime-proton-ge11@sha256:2a05410a61a9f528134233b44e15395faeeecf966d01bf54ef8cdb1290c0f8b5
     command: [bash, /data/kuro-start.sh]
     env:
       HOME: /data/home
@@ -55,8 +55,8 @@ install:
     # Bibliothèque Steam Linux (relayée au serveur par Proton), prise dans un SteamCMD à jour : celle
     # du redistribuable Steamworks (app 1007) est trop ancienne pour le serveur.
     - script:
-        image: ghcr.io/kuroctl/mirror/cm2network/steamcmd@sha256:6420fb40313fc00ee0d7fe1ae02c4c32f2b085980f5795b7171022d3409e29fb
-        run: /home/steam/steamcmd/steamcmd.sh +quit > /dev/null 2>&1 || true; mkdir -p /data/steam && cp -r /home/steam/steamcmd/linux64 /home/steam/steamcmd/linux32 /data/steam/
+        image: ghcr.io/kuroctl/runtime-steamcmd@sha256:5cf1e3a9fa0eeb1579b0a2c1aad0f6dfd28d91291f98e0729c31e600fbe0fe0f
+        run: /opt/steamcmd/steamcmd.sh +quit > /dev/null 2>&1 || true; mkdir -p /data/steam && cp -rf /opt/steamcmd/linux64 /opt/steamcmd/linux32 /data/steam/
     - copy: { template: templates/start.sh, to: /data/kuro-start.sh }
 
 files:

@@ -1,11 +1,11 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/kuroctl/kuro/main/shared/prefab/schema/prefab.v1.schema.json
 # Project Zomboid : serveur dédié Linux (app Steam 380870, branche publique : Build 42 stable),
-# installé par SteamCMD. Le serveur embarque sa JVM (`jre64/`) ; l'image d'exécution est celle de
-# SteamCMD (Debian 12, utilisateur steam 1000), sans point d'entrée.
+# installé par SteamCMD. Le serveur embarque sa JVM (`jre64/`) ; l'image d'exécution est
+# `runtime-steamcmd` de Kuro (Debian 13, utilisateur 1000, tini ; ADR-0048).
 # Le nom du serveur est fixé (`kuro`) : il nomme ses fichiers (Server/kuro.ini…).
 schema: kuro.prefab/v1
 id: project-zomboid
-version: 1.2.1
+version: 1.3.0
 category: game
 tags: [project-zomboid, zombie, survival, steam]
 authors:
@@ -27,7 +27,7 @@ steam: { app: 108600 }
 
 services:
   server:
-    image: ghcr.io/kuroctl/mirror/cm2network/steamcmd@sha256:6420fb40313fc00ee0d7fe1ae02c4c32f2b085980f5795b7171022d3409e29fb
+    image: ghcr.io/kuroctl/runtime-steamcmd@sha256:5cf1e3a9fa0eeb1579b0a2c1aad0f6dfd28d91291f98e0729c31e600fbe0fe0f
     # `start-server.sh` se place dans son dossier et lance la JVM livrée avec le jeu. Le mot de
     # passe admin ne sert qu'à la création du compte, au premier démarrage.
     command:

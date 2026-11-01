@@ -1,11 +1,11 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/kuroctl/kuro/main/shared/prefab/schema/prefab.v1.schema.json
 # Counter-Strike 2 (Valve) : serveur dédié Linux, même application Steam que le jeu (730),
-# installé par SteamCMD en anonyme. Image d'exécution : celle de SteamCMD (Debian 12, utilisateur
-# steam 1000), sans point d'entrée, comme Rust. Sans jeton de serveur (GSLT), le serveur reste en
-# réseau local et n'apparaît pas dans la liste de Steam.
+# installé par SteamCMD en anonyme. Image d'exécution : `runtime-steamcmd` de Kuro (Debian 13,
+# utilisateur 1000, tini ; ADR-0048), comme Rust. Sans jeton de serveur (GSLT), le serveur reste
+# en réseau local et n'apparaît pas dans la liste de Steam.
 schema: kuro.prefab/v1
 id: counter-strike-2
-version: 1.0.2
+version: 1.1.0
 category: game
 tags: [counter-strike, cs2, fps, steam]
 authors:
@@ -21,13 +21,13 @@ assets:
   icon: assets/icon.jpg
   cover: assets/banner.jpg
   thumbnail: assets/thumbnail.jpg
-x-status: "draft: not yet tried on a real node (ready line, console on stdin, LAN-only behaviour without GSLT)"
+x-status: "draft: not yet tried on a real node (players joining, LAN-only behaviour without GSLT)"
 # Jeu sur le magasin Steam : le Studio en importe les images (ADR-0039).
 steam: { app: 730 }
 
 services:
   server:
-    image: ghcr.io/kuroctl/mirror/cm2network/steamcmd@sha256:6420fb40313fc00ee0d7fe1ae02c4c32f2b085980f5795b7171022d3409e29fb
+    image: ghcr.io/kuroctl/runtime-steamcmd@sha256:5cf1e3a9fa0eeb1579b0a2c1aad0f6dfd28d91291f98e0729c31e600fbe0fe0f
     # Le shell ne fait que se placer dans le dossier du binaire ; les valeurs restent des arguments
     # séparés ("$@"), jamais collés dans le script.
     command:
@@ -56,6 +56,9 @@ services:
     env:
       # La bibliothèque Steam est cherchée dans ~/.steam/sdk64 (HOME est sur le volume).
       HOME: /data/home
+      # Bibliothèques du moteur (`libv8.so`…), ajoutées par le lanceur officiel `cs2.sh` : sans
+      # elles, `libserver.so` ne se charge pas.
+      LD_LIBRARY_PATH: /data/server/game/bin/linuxsteamrt64
     ports:
       # CS2 annonce son port à Steam : allouer sur l'hôte le même numéro.
       game: { container: 27015, protocol: udp, public: true }
@@ -69,7 +72,7 @@ install:
   steps:
     - steamcmd: { app: 730, dir: /data/server, validate: true }
     - script:
-        run: mkdir -p /data/home/.steam/sdk64 && cp -f /home/steam/steamcmd/linux64/steamclient.so /data/home/.steam/sdk64/
+        run: mkdir -p /data/home/.steam/sdk64 && cp -f /opt/steamcmd/linux64/steamclient.so /data/home/.steam/sdk64/
 
 settings:
   general:
@@ -103,5 +106,7 @@ backup:
 
 lifecycle:
   service: server
+  # Après la carte et la connexion à Steam et au GC (essayé sans GSLT, en 5 s environ).
+  ready: { console: 'activated session on GC' }
   stop: { console: quit }
   timeout: 120

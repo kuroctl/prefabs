@@ -1,12 +1,12 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/kuroctl/kuro/main/shared/prefab/schema/prefab.v1.schema.json
 # Rust (Facepunch) : serveur dédié Linux (app Steam 258550), installé par SteamCMD. Image
-# d'exécution : celle de SteamCMD (Debian 12, utilisateur steam 1000), sans point d'entrée.
+# d'exécution : `runtime-steamcmd` de Kuro (Debian 13, utilisateur 1000, tini ; ADR-0048).
 # La console Linux de Rust n'est pas interactive : les commandes passent par WebRCON (port `rcon`,
 # interne au réseau du serveur). Les mises à jour forcées (premier jeudi du mois) demandent une
 # réinstallation, sans quoi les clients à jour ne peuvent plus se connecter.
 schema: kuro.prefab/v1
 id: rust
-version: 1.1.1
+version: 1.2.0
 category: game
 tags: [rust, survival, steam]
 authors:
@@ -27,14 +27,13 @@ steam: { app: 252490 }
 
 services:
   server:
-    image: ghcr.io/kuroctl/mirror/cm2network/steamcmd@sha256:6420fb40313fc00ee0d7fe1ae02c4c32f2b085980f5795b7171022d3409e29fb
-    # Rust résout ses chemins (server/<identité>) depuis le dossier courant : le shell ne fait que
-    # s'y placer, les valeurs restent des arguments séparés ("$@"), jamais collées dans le script.
+    image: ghcr.io/kuroctl/runtime-steamcmd@sha256:5cf1e3a9fa0eeb1579b0a2c1aad0f6dfd28d91291f98e0729c31e600fbe0fe0f
+    # templates/start.sh se place dans /data/server (Rust y résout server/<identité>) et lance le
+    # serveur avec ces arguments, séparés ("$@"), jamais collés dans le script ; à l'arrêt, il
+    # envoie `quit` par WebRCON pour enregistrer le monde.
     command:
-      - sh
-      - -c
-      - 'cd /data/server && exec ./RustDedicated "$@"'
-      - rust
+      - bash
+      - /data/kuro-start.sh
       - -batchmode
       - -nographics
       - -logfile
@@ -76,6 +75,9 @@ services:
     env:
       HOME: /data/home
       LD_LIBRARY_PATH: /data/server:/data/server/RustDedicated_Data/Plugins/x86_64
+      # Lus par templates/start.sh pour envoyer `quit` à l'arrêt.
+      RCON_PORT: "{{ ports.rcon.container }}"
+      RCON_PASSWORD: "{{ settings.rcon_password }}"
     ports:
       # Rust annonce ses ports à Steam : allouer sur l'hôte les mêmes numéros.
       game: { container: 28015, protocol: udp, public: true }
@@ -95,7 +97,8 @@ install:
     - steamcmd: { app: 258550, dir: /data/server, validate: true }
     # La bibliothèque Steam du serveur est cherchée dans ~/.steam/sdk64 (HOME est sur le volume).
     - script:
-        run: mkdir -p /data/home/.steam/sdk64 && cp -f /home/steam/steamcmd/linux64/steamclient.so /data/home/.steam/sdk64/
+        run: mkdir -p /data/home/.steam/sdk64 && cp -f /opt/steamcmd/linux64/steamclient.so /data/home/.steam/sdk64/
+    - copy: { template: templates/start.sh, to: /data/kuro-start.sh }
 
 settings:
   general:
@@ -120,7 +123,8 @@ settings:
     security:
       icon: shield
       fields:
-        rcon_password: { type: secret, generate: { length: 32 } }
+        # Placé dans l'adresse WebRCON par templates/start.sh : lettres, chiffres, `_` et `-`.
+        rcon_password: { type: secret, generate: { length: 32 }, pattern: '^[A-Za-z0-9_-]{8,128}$' }
 
 files:
   server-cfg:
@@ -141,5 +145,6 @@ backup:
 lifecycle:
   service: server
   ready: { console: 'Server startup complete' }
+  # Intercepté par templates/start.sh, qui envoie `quit` par WebRCON (enregistrement du monde).
   stop: { signal: SIGINT }
   timeout: 300

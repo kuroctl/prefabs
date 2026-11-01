@@ -14,12 +14,12 @@ set -euo pipefail
 
 proton_dir=/tmp/proton
 mkdir -p "$proton_dir" "$HOME/.steam" "$STEAM_COMPAT_DATA_PATH"
-for file in /usr/local/bin/*; do
+for file in /opt/proton/*; do
   ln -sfn "$file" "$proton_dir/"
 done
 rm -f "$proton_dir/proton"
 sed 's/append_to_env_str(self.env, "WINEDLLOVERRIDES", "lsteamclient=d", ";")/pass/' \
-  /usr/local/bin/proton > "$proton_dir/proton"
+  /opt/proton/proton > "$proton_dir/proton"
 ln -sfn /data/steam/linux64 "$HOME/.steam/sdk64"
 ln -sfn /data/steam/linux32 "$HOME/.steam/sdk32"
 
