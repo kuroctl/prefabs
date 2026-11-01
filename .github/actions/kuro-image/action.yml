@@ -58,7 +58,7 @@ runs:
         echo "digest=$digest" >> "$GITHUB_OUTPUT"
         echo "ref=$image@$digest" >> "$GITHUB_OUTPUT"
         echo "- \`$image:$TAG\` → \`$digest\`" >> "$GITHUB_STEP_SUMMARY"
-    - uses: actions/attest-build-provenance@v2
+    - uses: actions/attest-build-provenance@v4
       with:
         subject-name: ghcr.io/kuroctl/${{ inputs.name }}
         subject-digest: ${{ steps.build.outputs.digest }}

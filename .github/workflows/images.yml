@@ -42,14 +42,14 @@ jobs:
       base: ${{ steps.base.outputs.ref }}
     steps:
       - uses: actions/checkout@v7
-      - uses: docker/setup-qemu-action@v3
-      - uses: docker/setup-buildx-action@v3
-      - uses: docker/login-action@v3
+      - uses: docker/setup-qemu-action@v4
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: aquasecurity/setup-trivy@v0.2.2
+      - uses: aquasecurity/setup-trivy@v0.3.1
       - id: tag
         run: echo "tag=${MAJOR}-$(date -u +%Y.%m.%d)-${{ github.run_number }}" >> "$GITHUB_OUTPUT"
       - id: base
@@ -76,13 +76,13 @@ jobs:
       proton: ${{ steps.proton.outputs.matrix }}
     steps:
       - uses: actions/checkout@v7
-      - uses: docker/setup-buildx-action@v3
-      - uses: docker/login-action@v3
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: aquasecurity/setup-trivy@v0.2.2
+      - uses: aquasecurity/setup-trivy@v0.3.1
       - id: steamcmd
         uses: ./.github/actions/kuro-image
         with:
@@ -121,13 +121,13 @@ jobs:
       - uses: actions/checkout@v7
       # Proton occupe plusieurs Go : place libérée sur le runner.
       - run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
-      - uses: docker/setup-buildx-action@v3
-      - uses: docker/login-action@v3
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: aquasecurity/setup-trivy@v0.2.2
+      - uses: aquasecurity/setup-trivy@v0.3.1
       - uses: ./.github/actions/kuro-image
         with:
           name: runtime-proton-${{ matrix.proton.name }}
