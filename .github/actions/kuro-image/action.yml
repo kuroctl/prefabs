@@ -1,0 +1,65 @@
+# Construit une image Kuro (ADR-0048), l'analyse avec Trivy sur amd64, la publie dans
+# ghcr.io/kuroctl/<name> sous le tag donné et attache une attestation de provenance.
+# Le job appelant fournit checkout, QEMU, Buildx, connexion à GHCR et Trivy.
+name: kuro-image
+description: Build, scan, push and attest one Kuro runtime image
+inputs:
+  name:
+    description: Image name under ghcr.io/kuroctl/
+    required: true
+  context:
+    description: Build context (folder with the Dockerfile)
+    required: true
+  platforms:
+    description: Target platforms
+    default: linux/amd64
+  tag:
+    description: Tag to push
+    required: true
+  build-args:
+    description: One KEY=VALUE per line
+    default: ""
+outputs:
+  digest:
+    description: Digest of the pushed image
+    value: ${{ steps.build.outputs.digest }}
+  ref:
+    description: Full reference pinned by digest
+    value: ${{ steps.build.outputs.ref }}
+runs:
+  using: composite
+  steps:
+    - id: build
+      shell: bash
+      env:
+        NAME: ${{ inputs.name }}
+        CONTEXT: ${{ inputs.context }}
+        PLATFORMS: ${{ inputs.platforms }}
+        TAG: ${{ inputs.tag }}
+        BUILD_ARGS: ${{ inputs.build-args }}
+      run: |
+        set -euo pipefail
+        image="ghcr.io/kuroctl/$NAME"
+        args=()
+        while IFS= read -r line; do
+          [ -n "$line" ] && args+=(--build-arg "$line")
+        done <<< "$BUILD_ARGS"
+        # Analyse avant toute publication : image amd64 chargée localement.
+        docker buildx build --platform linux/amd64 --load -t "scan/$NAME" \
+          --cache-from "type=gha,scope=$NAME" --cache-to "type=gha,scope=$NAME,mode=max" \
+          "${args[@]}" "$CONTEXT"
+        trivy image --quiet --exit-code 1 --severity CRITICAL,HIGH --ignore-unfixed \
+          --ignorefile images/.trivyignore --scanners vuln "scan/$NAME"
+        docker buildx build --platform "$PLATFORMS" --push -t "$image:$TAG" \
+          --cache-from "type=gha,scope=$NAME" --provenance=false \
+          --metadata-file "$RUNNER_TEMP/$NAME.json" \
+          "${args[@]}" "$CONTEXT"
+        digest=$(jq -r '."containerimage.digest"' "$RUNNER_TEMP/$NAME.json")
+        echo "digest=$digest" >> "$GITHUB_OUTPUT"
+        echo "ref=$image@$digest" >> "$GITHUB_OUTPUT"
+        echo "- \`$image:$TAG\` → \`$digest\`" >> "$GITHUB_STEP_SUMMARY"
+    - uses: actions/attest-build-provenance@v2
+      with:
+        subject-name: ghcr.io/kuroctl/${{ inputs.name }}
+        subject-digest: ${{ steps.build.outputs.digest }}
+        push-to-registry: true

@@ -1,0 +1,5 @@
+# Une image `runtime-proton-<nom>` par ligne : `<nom> <tag de la release GE-Proton>`.
+# Une version s'ajoute quand un jeu l'exige (ADR-0032) ; elle s'enlève quand plus aucun prefab
+# publié ne cite son image. Renovate propose les versions correctives d'une même série, à relire.
+ge10 GE-Proton10-34
+ge11 GE-Proton11-11

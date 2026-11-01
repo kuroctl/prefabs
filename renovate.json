@@ -1,0 +1,54 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Kuro ADR-0048: Debian base digest, Proton GE versions and upstream images of prefabs.",
+  "extends": ["config:recommended", ":disableDependencyDashboard"],
+  "timezone": "Europe/Paris",
+  "schedule": ["before 6am on monday"],
+  "enabledManagers": ["dockerfile", "github-actions", "custom.regex"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Proton GE versions of the runtime-proton images",
+      "managerFilePatterns": ["/^images/runtime-proton/versions$/"],
+      "matchStrings": ["^\\S+ (?<currentValue>GE-Proton\\d+-\\d+)$"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "GloriousEggroll/proton-ge-custom",
+      "versioningTemplate": "regex:^GE-Proton(?<major>\\d+)-(?<minor>\\d+)$"
+    },
+    {
+      "customType": "regex",
+      "description": "Upstream images pinned in prefab manifests",
+      "managerFilePatterns": ["/(^|/)prefab\\.yaml$/"],
+      "matchStrings": [
+        "image: (?<depName>(?:docker\\.io|ghcr\\.io)/[^\\s:@]+)(?::(?<currentValue>[^\\s@]+))?(?:@(?<currentDigest>sha256:[a-f0-9]{64}))?"
+      ],
+      "datasourceTemplate": "docker"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Debian stays on trixie within contract 1: digest updates only, merged automatically (the images workflow scans and rebuilds).",
+      "matchManagers": ["dockerfile"],
+      "matchDepNames": ["docker.io/library/debian"],
+      "matchUpdateTypes": ["digest"],
+      "automerge": true
+    },
+    {
+      "description": "A Proton GE series (ge10, ge11) only takes fixes of its own series; reviewed by hand, a game may break.",
+      "matchDepNames": ["GloriousEggroll/proton-ge-custom"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    },
+    {
+      "description": "Upstream images of prefabs: grouped weekly; the prefab version must be bumped in the same PR.",
+      "matchFileNames": ["**/prefab.yaml"],
+      "groupName": "upstream images of prefabs",
+      "prBodyNotes": ["⚠️ Bump the `version` of every prefab touched by this PR (a published prefab is immutable), then run the install bench."]
+    },
+    {
+      "description": "Kuro images and the mirror are pinned by the images workflow, and community images are being replaced: no updates.",
+      "matchDepNames": ["/^(ghcr\\.io/(kuroctl|parkervcp|ptero-eggs)|docker\\.io/cm2network)//"],
+      "enabled": false
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+# Failles acceptées par l'analyse Trivy des images Kuro (ADR-0048) : une ligne par identifiant,
+# précédée d'un commentaire daté qui dit pourquoi (pas de correctif, composant inutilisé…) et
+# quand la revoir. Vide tant que rien n'est accepté.
