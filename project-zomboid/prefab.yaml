@@ -5,7 +5,7 @@
 # Le nom du serveur est fixé (`kuro`) : il nomme ses fichiers (Server/kuro.ini…).
 schema: kuro.prefab/v1
 id: project-zomboid
-version: 1.3.0
+version: 1.4.0
 category: game
 tags: [project-zomboid, zombie, survival, steam]
 authors:
@@ -61,23 +61,23 @@ settings:
     server:
       icon: server
       fields:
-        public_name: { type: string, default: "Kuro Zomboid", max_length: 64, restart: true }
-        public_description: { type: text, max_length: 512, restart: true }
-        welcome_message: { type: text, default: "Welcome!", max_length: 512, restart: true }
-        public: { type: bool, default: true, restart: true }
+        public_name: { type: string, default: "Kuro Zomboid", max_length: 64, restart: true, visibility: customer }
+        public_description: { type: text, max_length: 512, restart: true, visibility: customer }
+        welcome_message: { type: text, default: "Welcome!", max_length: 512, restart: true, visibility: customer }
+        public: { type: bool, default: true, restart: true, visibility: customer }
         max_players: { type: int, default: 16, min: 1, max: 254, restart: true }
     rules:
       icon: users
       fields:
-        pvp: { type: bool, default: true, restart: true }
-        pause_empty: { type: bool, default: true, restart: true }
-        open: { type: bool, default: true, restart: true }
-        save_minutes: { type: int, default: 0, min: 0, max: 1440, restart: true }
+        pvp: { type: bool, default: true, restart: true, visibility: customer }
+        pause_empty: { type: bool, default: true, restart: true, visibility: customer }
+        open: { type: bool, default: true, restart: true, visibility: customer }
+        save_minutes: { type: int, default: 0, min: 0, max: 1440, restart: true, visibility: customer }
   advanced:
     security:
       icon: shield
       fields:
-        password: { type: password, max_length: 64, restart: true }
+        password: { type: password, max_length: 64, restart: true, visibility: customer }
         admin_password: { type: secret, generate: { length: 24 } }
 
 files:

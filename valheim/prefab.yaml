@@ -5,7 +5,7 @@
 # les réglages y arrivent par l'environnement, jamais collés dans la commande (ADR-0027).
 schema: kuro.prefab/v1
 id: valheim
-version: 1.1.1
+version: 1.2.0
 category: game
 tags: [valheim, survival, steam]
 authors:
@@ -62,7 +62,7 @@ settings:
     server:
       icon: server
       fields:
-        server_name: { type: string, default: "Kuro Valheim", max_length: 60, required: true, restart: true }
+        server_name: { type: string, default: "Kuro Valheim", max_length: 60, required: true, restart: true, visibility: customer }
         password:
           type: password
           required: true
@@ -70,18 +70,19 @@ settings:
           # du serveur ou du monde.
           pattern: "^.{5,64}$"
           restart: true
-        public: { type: enum, options: ["1", "0"], default: "1", restart: true }
+          visibility: customer
+        public: { type: enum, options: ["1", "0"], default: "1", restart: true, visibility: customer }
     world:
       icon: globe
       fields:
-        world_name: { type: string, default: Dedicated, pattern: "^[A-Za-z0-9_-]{1,20}$", restart: true }
-        preset: { type: enum, options: [normal, casual, easy, hard, hardcore, immersive, hammer], default: normal, restart: true }
+        world_name: { type: string, default: Dedicated, pattern: "^[A-Za-z0-9_-]{1,20}$", restart: true, visibility: customer }
+        preset: { type: enum, options: [normal, casual, easy, hard, hardcore, immersive, hammer], default: normal, restart: true, visibility: customer }
   advanced:
     saves:
       icon: archive
       fields:
-        save_interval: { type: int, default: 1800, min: 60, max: 7200, restart: true }
-        backups: { type: int, default: 4, min: 1, max: 20, restart: true }
+        save_interval: { type: int, default: 1800, min: 60, max: 7200, restart: true, visibility: customer }
+        backups: { type: int, default: 4, min: 1, max: 20, restart: true, visibility: customer }
 
 files:
   adminlist:

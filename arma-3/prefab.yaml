@@ -7,7 +7,7 @@
 # demanderaient le compte Steam dans l'environnement du serveur) : Kuro met à jour en réinstallant.
 schema: kuro.prefab/v1
 id: arma-3
-version: 0.1.1
+version: 0.2.0
 category: game
 tags: [arma-3, military, simulation, steam]
 authors:
@@ -66,8 +66,8 @@ settings:
       icon: server
       fields:
         # Écrits entre guillemets dans server.cfg : ni guillemet ni barre oblique inverse.
-        server_name: { type: string, default: "Kuro Arma 3", pattern: '^[^"\\]{1,80}$', required: true, restart: true }
-        password: { type: password, pattern: '^[^"\\]{0,64}$', restart: true }
+        server_name: { type: string, default: "Kuro Arma 3", pattern: '^[^"\\]{1,80}$', required: true, restart: true, visibility: customer }
+        password: { type: password, pattern: '^[^"\\]{0,64}$', restart: true, visibility: customer }
         max_players: { type: int, default: 32, min: 1, max: 256, restart: true }
     administration:
       icon: shield

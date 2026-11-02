@@ -6,7 +6,7 @@
 # réinstallation, sans quoi les clients à jour ne peuvent plus se connecter.
 schema: kuro.prefab/v1
 id: rust
-version: 1.2.0
+version: 1.3.0
 category: game
 tags: [rust, survival, steam]
 authors:
@@ -105,21 +105,21 @@ settings:
     server:
       icon: server
       fields:
-        hostname: { type: string, default: "Kuro Rust", max_length: 64, required: true, restart: true }
-        description: { type: text, max_length: 512, restart: true }
-        url: { type: string, max_length: 256, pattern: "^(https://\\S+)?$", restart: true }
-        header_image: { type: string, max_length: 256, pattern: "^(https://\\S+\\.(png|jpe?g))?$", restart: true }
+        hostname: { type: string, default: "Kuro Rust", max_length: 64, required: true, restart: true, visibility: customer }
+        description: { type: text, max_length: 512, restart: true, visibility: customer }
+        url: { type: string, max_length: 256, pattern: "^(https://\\S+)?$", restart: true, visibility: customer }
+        header_image: { type: string, max_length: 256, pattern: "^(https://\\S+\\.(png|jpe?g))?$", restart: true, visibility: customer }
         max_players: { type: int, default: 50, min: 1, max: 500, restart: true }
     world:
       icon: globe
       fields:
-        world_size: { type: slider, default: 3000, min: 1000, max: 6000, step: 250, editable: deploy, restart: true }
-        seed: { type: int, default: 12345, min: 0, max: 2147483647, editable: deploy, restart: true }
+        world_size: { type: slider, default: 3000, min: 1000, max: 6000, step: 250, editable: deploy, restart: true, visibility: customer }
+        seed: { type: int, default: 12345, min: 0, max: 2147483647, editable: deploy, restart: true, visibility: customer }
   advanced:
     saves:
       icon: archive
       fields:
-        save_interval: { type: int, default: 300, min: 60, max: 3600, restart: true }
+        save_interval: { type: int, default: 300, min: 60, max: 3600, restart: true, visibility: customer }
     security:
       icon: shield
       fields:

@@ -7,7 +7,7 @@
 # contenir (nom du serveur) passe par `kuro.cfg`, regénéré à chaque démarrage.
 schema: kuro.prefab/v1
 id: fivem
-version: 0.1.1
+version: 0.2.0
 category: game
 tags: [fivem, gta-v, redm, roleplay]
 authors:
@@ -82,17 +82,17 @@ settings:
     server:
       icon: server
       fields:
-        license: { type: password, required: true, pattern: '^[A-Za-z0-9_-]{1,64}$', restart: true }
+        license: { type: password, required: true, pattern: '^[A-Za-z0-9_-]{1,64}$', restart: true, visibility: customer }
         # Écrit entre guillemets dans kuro.cfg : ni guillemet ni barre oblique inverse.
-        server_name: { type: string, default: "Kuro FiveM", pattern: '^[^"\\]{1,80}$', required: true, restart: true }
+        server_name: { type: string, default: "Kuro FiveM", pattern: '^[^"\\]{1,80}$', required: true, restart: true, visibility: customer }
         max_players: { type: int, default: 48, min: 1, max: 48, restart: true }
         game: { type: enum, options: [gta5], default: gta5, restart: true }
   advanced:
     administration:
       icon: shield
       fields:
-        txadmin: { type: enum, options: ["0", "1"], default: "0", restart: true }
-        steam_web_api_key: { type: password, pattern: '^[A-Za-z0-9]{0,64}$', restart: true }
+        txadmin: { type: enum, options: ["0", "1"], default: "0", restart: true, visibility: customer }
+        steam_web_api_key: { type: password, pattern: '^[A-Za-z0-9]{0,64}$', restart: true, visibility: customer }
 
 files:
   # Réglages de Kuro, regénérés à chaque démarrage depuis le panel.

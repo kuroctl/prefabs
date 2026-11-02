@@ -6,7 +6,7 @@
 # joueur, que l'allocation de ports de Kuro ne sait pas réserver.
 schema: kuro.prefab/v1
 id: minecraft-bedrock
-version: 1.1.0
+version: 1.2.0
 category: game
 tags: [minecraft, bedrock, sandbox]
 authors:
@@ -55,29 +55,29 @@ settings:
     server:
       icon: server
       fields:
-        server_name: { type: string, default: "Kuro Bedrock", max_length: 64, restart: true }
+        server_name: { type: string, default: "Kuro Bedrock", max_length: 64, restart: true, visibility: customer }
         max_players: { type: int, default: 10, min: 1, max: 200, restart: true }
-        gamemode: { type: enum, options: [survival, creative, adventure], default: survival, restart: true }
-        difficulty: { type: enum, options: [peaceful, easy, normal, hard], default: normal, restart: true }
-        allow_cheats: { type: bool, default: false, restart: true }
+        gamemode: { type: enum, options: [survival, creative, adventure], default: survival, restart: true, visibility: customer }
+        difficulty: { type: enum, options: [peaceful, easy, normal, hard], default: normal, restart: true, visibility: customer }
+        allow_cheats: { type: bool, default: false, restart: true, visibility: customer }
     version:
       icon: package
       fields:
-        version: { type: string, default: LATEST, pattern: "^(LATEST|PREVIEW|\\d+\\.\\d+\\.\\d+(\\.\\d+)?)$", restart: true }
+        version: { type: string, default: LATEST, pattern: "^(LATEST|PREVIEW|\\d+\\.\\d+\\.\\d+(\\.\\d+)?)$", restart: true, visibility: customer }
   advanced:
     world:
       icon: globe
       fields:
-        level_name: { type: string, default: Bedrock level, pattern: "^[A-Za-z0-9 _-]{1,32}$", editable: deploy, restart: true }
-        level_seed: { type: string, max_length: 64, editable: deploy }
-        view_distance: { type: slider, min: 5, max: 32, step: 1, default: 10, restart: true }
-        tick_distance: { type: slider, min: 4, max: 12, step: 1, default: 4, restart: true }
+        level_name: { type: string, default: Bedrock level, pattern: "^[A-Za-z0-9 _-]{1,32}$", editable: deploy, restart: true, visibility: customer }
+        level_seed: { type: string, max_length: 64, editable: deploy, visibility: customer }
+        view_distance: { type: slider, min: 5, max: 32, step: 1, default: 10, restart: true, visibility: customer }
+        tick_distance: { type: slider, min: 4, max: 12, step: 1, default: 4, restart: true, visibility: customer }
     security:
       icon: shield
       fields:
         online_mode: { type: bool, default: true, restart: true }
-        allow_list: { type: bool, default: false, restart: true }
-        ops: { type: string, max_length: 512, pattern: "^[A-Za-z0-9 ,_-]*$", restart: true }
+        allow_list: { type: bool, default: false, restart: true, visibility: customer }
+        ops: { type: string, max_length: 512, pattern: "^[A-Za-z0-9 ,_-]*$", restart: true, visibility: customer }
 
 files:
   server-properties:

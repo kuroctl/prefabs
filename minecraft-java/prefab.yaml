@@ -3,7 +3,7 @@
 # L'image itzg/minecraft-server télécharge elle-même le serveur au premier démarrage : pas de bloc `install`.
 schema: kuro.prefab/v1
 id: minecraft-java
-version: 1.4.0
+version: 1.5.0
 category: game
 tags: [minecraft, java, sandbox]
 authors:
@@ -41,23 +41,23 @@ settings:
     server:
       icon: server
       fields:
-        motd: { type: string, default: "A Kuro server", max_length: 59 }
+        motd: { type: string, default: "A Kuro server", max_length: 59, visibility: customer }
         max_players: { type: int, default: 20, min: 1, max: 500, restart: true }
-        difficulty: { type: enum, options: [peaceful, easy, normal, hard], default: normal }
-        gamemode: { type: enum, options: [survival, creative, adventure, spectator], default: survival }
-        whitelist: { type: bool, default: false }
+        difficulty: { type: enum, options: [peaceful, easy, normal, hard], default: normal, visibility: customer }
+        gamemode: { type: enum, options: [survival, creative, adventure, spectator], default: survival, visibility: customer }
+        whitelist: { type: bool, default: false, visibility: customer }
     version:
       icon: package
       fields:
-        loader: { type: enum, options: [vanilla, paper, fabric, quilt, forge, neoforge], default: vanilla, editable: deploy, restart: true }
-        version: { type: string, default: LATEST, pattern: "^(LATEST|SNAPSHOT|\\d+\\.\\d+(\\.\\d+)?)$", restart: true }
+        loader: { type: enum, options: [vanilla, paper, fabric, quilt, forge, neoforge], default: vanilla, editable: deploy, restart: true, visibility: customer }
+        version: { type: string, default: LATEST, pattern: "^(LATEST|SNAPSHOT|\\d+\\.\\d+(\\.\\d+)?)$", restart: true, visibility: customer }
   advanced:
     world:
       icon: globe
       fields:
-        level_seed: { type: string, max_length: 64, editable: deploy }
-        view_distance: { type: slider, min: 3, max: 32, step: 1, default: 10, restart: true }
-        pvp: { type: bool, default: true }
+        level_seed: { type: string, max_length: 64, editable: deploy, visibility: customer }
+        view_distance: { type: slider, min: 3, max: 32, step: 1, default: 10, restart: true, visibility: customer }
+        pvp: { type: bool, default: true, visibility: customer }
     security:
       icon: shield
       fields:

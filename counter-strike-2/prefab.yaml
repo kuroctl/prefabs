@@ -5,7 +5,7 @@
 # en réseau local et n'apparaît pas dans la liste de Steam.
 schema: kuro.prefab/v1
 id: counter-strike-2
-version: 1.1.0
+version: 1.2.0
 category: game
 tags: [counter-strike, cs2, fps, steam]
 authors:
@@ -79,19 +79,19 @@ settings:
     server:
       icon: server
       fields:
-        hostname: { type: string, default: "Kuro CS2", max_length: 64, pattern: '^[^"\\]*$', required: true, restart: true }
+        hostname: { type: string, default: "Kuro CS2", max_length: 64, pattern: '^[^"\\]*$', required: true, restart: true, visibility: customer }
         max_players: { type: int, default: 10, min: 2, max: 64, restart: true }
-        password: { type: password, max_length: 64, pattern: '^[^"\s\\]*$', restart: true }
+        password: { type: password, max_length: 64, pattern: '^[^"\s\\]*$', restart: true, visibility: customer }
     match:
       icon: globe
       fields:
-        game_alias: { type: enum, options: [competitive, casual, wingman, deathmatch], default: competitive, restart: true }
-        map: { type: string, default: de_dust2, pattern: "^[a-z0-9_]{1,64}$", restart: true }
+        game_alias: { type: enum, options: [competitive, casual, wingman, deathmatch], default: competitive, restart: true, visibility: customer }
+        map: { type: string, default: de_dust2, pattern: "^[a-z0-9_]{1,64}$", restart: true, visibility: customer }
   advanced:
     steam:
       icon: shield
       fields:
-        gslt: { type: password, max_length: 64, pattern: "^[A-Fa-f0-9]{0,64}$", restart: true }
+        gslt: { type: password, max_length: 64, pattern: "^[A-Fa-f0-9]{0,64}$", restart: true, visibility: customer }
 
 files:
   server-cfg:

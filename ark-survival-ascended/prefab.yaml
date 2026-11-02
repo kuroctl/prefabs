@@ -5,7 +5,7 @@
 # Brouillon tant qu'aucun essai réel n'a confirmé le démarrage et l'enregistrement à l'arrêt.
 schema: kuro.prefab/v1
 id: ark-survival-ascended
-version: 0.4.1
+version: 0.5.0
 category: game
 tags: [ark, survival, steam]
 authors:
@@ -73,8 +73,8 @@ settings:
       icon: users
       fields:
         # `?` et `"` couperaient la ligne d'options du serveur.
-        session_name: { type: string, default: "Kuro ARK", max_length: 63, pattern: '^[^?"]*$', required: true, restart: true }
-        password: { type: password, pattern: '^[^?"\s]{0,64}$', restart: true }
+        session_name: { type: string, default: "Kuro ARK", max_length: 63, pattern: '^[^?"]*$', required: true, restart: true, visibility: customer }
+        password: { type: password, pattern: '^[^?"\s]{0,64}$', restart: true, visibility: customer }
         max_players: { type: int, default: 70, min: 1, max: 127, restart: true }
         map:
           type: enum
@@ -85,9 +85,9 @@ settings:
     rates:
       icon: gauge
       fields:
-        harvest_multiplier: { type: float, default: 1, min: 0.1, max: 100, step: 0.1, restart: true }
-        xp_multiplier: { type: float, default: 1, min: 0.1, max: 100, step: 0.1, restart: true }
-        taming_multiplier: { type: float, default: 1, min: 0.1, max: 100, step: 0.1, restart: true }
+        harvest_multiplier: { type: float, default: 1, min: 0.1, max: 100, step: 0.1, restart: true, visibility: customer }
+        xp_multiplier: { type: float, default: 1, min: 0.1, max: 100, step: 0.1, restart: true, visibility: customer }
+        taming_multiplier: { type: float, default: 1, min: 0.1, max: 100, step: 0.1, restart: true, visibility: customer }
     administration:
       icon: shield
       fields:
