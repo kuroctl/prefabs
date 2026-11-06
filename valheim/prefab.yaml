@@ -1,11 +1,10 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/kuroctl/kuro/main/shared/prefab/schema/prefab.v1.schema.json
 # Valheim : serveur dédié Linux (app Steam 896660), installé par SteamCMD.
-# Image d'exécution : celle des eggs Pterodactyl pour Valheim (Ubuntu 22.04, bibliothèques audio
-# et SDL du serveur). Kuro garde son point d'entrée, qui lit la ligne de lancement dans `STARTUP` ;
-# les réglages y arrivent par l'environnement, jamais collés dans la commande (ADR-0027).
+# Image d'exécution : `runtime-steamcmd` de Kuro (Debian 13, utilisateur 1000, tini ; ADR-0048).
+# Les réglages arrivent en arguments séparés, jamais collés dans une ligne de commande (ADR-0027).
 schema: kuro.prefab/v1
 id: valheim
-version: 1.2.0
+version: 1.3.0
 category: game
 tags: [valheim, survival, steam]
 authors:
@@ -20,35 +19,52 @@ assets:
   icon: assets/icon.png
   cover: assets/banner.webp
   thumbnail: assets/thumbnail.webp
+x-status: "draft: not yet tried on a real node with the Kuro runtime image (audio libraries, ready line)"
 # Jeu sur le magasin Steam : le Studio en importe les images (ADR-0039).
 steam: { app: 892970 }
 
 services:
   server:
-    # Épinglée par empreinte : le tag `games:valheim` est mis à jour en continu.
-    image: ghcr.io/kuroctl/mirror/ptero-eggs/games@sha256:5ade5bcfc0c00ad26fd1bac8ff35b6e5e48d8c6cb70ddb5ba72f448520956e24
+    image: ghcr.io/kuroctl/runtime-steamcmd@sha256:5cf1e3a9fa0eeb1579b0a2c1aad0f6dfd28d91291f98e0729c31e600fbe0fe0f
+    # Le shell ne fait que se placer dans le dossier du serveur ; les valeurs restent des arguments
+    # séparés ("$@"), jamais collés dans le script.
+    command:
+      - sh
+      - -c
+      - 'cd /home/container && exec ./valheim_server.x86_64 "$@"'
+      - valheim
+      - -nographics
+      - -batchmode
+      - -name
+      - "{{ settings.server_name }}"
+      - -port
+      - "{{ ports.game.container }}"
+      - -world
+      - "{{ settings.world_name }}"
+      - -password
+      - "{{ settings.password }}"
+      - -public
+      - "{{ settings.public }}"
+      - -preset
+      - "{{ settings.preset }}"
+      - -saveinterval
+      - "{{ settings.save_interval }}"
+      - -backups
+      - "{{ settings.backups }}"
+      - -savedir
+      - /home/container/saves
     env:
-      STARTUP: './valheim_server.x86_64 -nographics -batchmode -name "${SERVER_NAME}" -port ${SERVER_PORT} -world "${WORLD_NAME}" -password "${SERVER_PASS}" -public ${PUBLIC} -preset ${PRESET} -saveinterval ${SAVE_INTERVAL} -backups ${BACKUPS} -savedir /home/container/saves'
-      # Mises à jour faites par Kuro (réinstallation), jamais par le point d'entrée de l'image.
-      AUTO_UPDATE: "0"
+      # Unity écrit sous HOME : sur le volume, la racine étant en lecture seule.
+      HOME: /home/container
       LD_LIBRARY_PATH: /home/container/linux64
       # Identifiant du jeu (et non du serveur) attendu par la bibliothèque Steam.
       SteamAppId: "892970"
-      SERVER_NAME: "{{ settings.server_name }}"
-      WORLD_NAME: "{{ settings.world_name }}"
-      SERVER_PASS: "{{ settings.password }}"
-      PUBLIC: "{{ settings.public }}"
-      PRESET: "{{ settings.preset }}"
-      SAVE_INTERVAL: "{{ settings.save_interval }}"
-      BACKUPS: "{{ settings.backups }}"
-      SERVER_PORT: "{{ ports.game.container }}"
     ports:
       # Le port de requête est toujours celui du jeu + 1 : réserver deux ports consécutifs.
       game: { container: 2456, protocol: udp, public: true }
       query: { container: 2457, protocol: udp, public: true }
     volumes:
       data: { path: /home/container }
-    # Le point d'entrée écrit son identité d'utilisateur (nss_wrapper) dans /tmp.
     writable: [/tmp]
     user: "1000:1000"
 

@@ -29,7 +29,8 @@ jobs:
         run: |
           set -eu
           printf '%s\n' "$GHCR_TOKEN" | crane auth login ghcr.io -u "${{ github.actor }}" --password-stdin
-          grep -vE '^\s*(#|$)' images/mirror.txt | while read -r source; do
+          # Liste vide : rien à copier (grep sort en 1 sans ligne trouvée).
+          { grep -vE '^\s*(#|$)' images/mirror.txt || true; } | while read -r source; do
             case "$source" in
               *@sha256:*) ;;
               *) echo "not pinned by digest: $source" >&2; exit 1 ;;

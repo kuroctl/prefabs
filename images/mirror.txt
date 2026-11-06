@@ -2,10 +2,4 @@
 # une image épinglée par digest par ligne. La copie garde le digest : le manifest d'un prefab cite
 # `ghcr.io/kuroctl/mirror/<chemin source sans registre>@sha256:…`, avec le même digest.
 # Une ligne s'ajoute avant de repointer un prefab ; elle s'enlève quand plus aucun prefab ne la cite.
-docker.io/cm2network/steamcmd@sha256:6420fb40313fc00ee0d7fe1ae02c4c32f2b085980f5795b7171022d3409e29fb
-ghcr.io/parkervcp/steamcmd@sha256:7449885931bb470d6e40c491b4ff80528864bed61fcd31e6fbdf4e3d4bef0627
-ghcr.io/parkervcp/steamcmd@sha256:543ac8eced2e305146b77d7a717e6432c5c35d3f05777709a0c967200d4e97fd
-ghcr.io/ptero-eggs/games@sha256:c14eac53c77b73856ff241bc71b5a02472d17ab7a9cc061ccf8d13c27070bb90
-ghcr.io/ptero-eggs/games@sha256:5ade5bcfc0c00ad26fd1bac8ff35b6e5e48d8c6cb70ddb5ba72f448520956e24
-ghcr.io/ptero-eggs/yolks@sha256:3a31e5b23e671dfa8c0f3487003cc6dc6e2f44b5fac1212e194e0954eac8bd71
-ghcr.io/ptero-eggs/installers@sha256:084e7a28d9902d054b35bcad7c547bcd3b5739040b9e0f5bfe63bb18ce021423
+# Vide : tous les prefabs tournent sur les images de Kuro (runtime-*, installer).

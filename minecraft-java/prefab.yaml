@@ -3,7 +3,7 @@
 # L'image itzg/minecraft-server télécharge elle-même le serveur au premier démarrage : pas de bloc `install`.
 schema: kuro.prefab/v1
 id: minecraft-java
-version: 1.5.0
+version: 1.6.0
 category: game
 tags: [minecraft, java, sandbox]
 authors:
@@ -49,7 +49,9 @@ settings:
     version:
       icon: package
       fields:
-        loader: { type: enum, options: [vanilla, paper, fabric, quilt, forge, neoforge], default: vanilla, editable: deploy, restart: true, visibility: customer }
+        # Modifiable après la création : l'image télécharge le nouveau loader au redémarrage. Le
+        # monde est gardé ; les mods d'une autre famille de loader cessent de se charger.
+        loader: { type: enum, options: [vanilla, paper, fabric, quilt, forge, neoforge], default: vanilla, restart: true, visibility: customer }
         version: { type: string, default: LATEST, pattern: "^(LATEST|SNAPSHOT|\\d+\\.\\d+(\\.\\d+)?)$", restart: true, visibility: customer }
   advanced:
     world:

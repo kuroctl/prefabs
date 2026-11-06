@@ -1,11 +1,12 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/kuroctl/kuro/main/shared/prefab/schema/prefab.v1.schema.json
 # ARK : Survival Ascended. Le serveur dédié (app Steam 2430930) n'existe qu'en version Windows :
-# SteamCMD force la plateforme Windows (ADR-0032), Proton GE 10 l'exécute. Proton GE 11 bloque
+# SteamCMD force la plateforme Windows (ADR-0032), Proton GE 10 l'exécute (image
+# `runtime-proton-ge10` de Kuro, ADR-0048). Proton GE 11 bloque
 # ArkAscendedServer.exe au démarrage (signalé par la communauté). Lancement : templates/start.sh.
 # Brouillon tant qu'aucun essai réel n'a confirmé le démarrage et l'enregistrement à l'arrêt.
 schema: kuro.prefab/v1
 id: ark-survival-ascended
-version: 0.5.0
+version: 0.6.0
 category: game
 tags: [ark, survival, steam]
 authors:
@@ -21,15 +22,15 @@ assets:
   icon: assets/icon.png
   cover: assets/banner.png
   thumbnail: assets/thumbnail.png
-x-status: "draft: not yet tried on a real node (Proton 10 runtime, world saved on SIGINT?)"
+x-status: "draft: not yet tried on a real node (Kuro Proton 10 runtime, world saved on SIGINT?)"
 # Jeu sur le magasin Steam : le Studio en importe les images (ADR-0039).
 steam: { app: 2399830 }
 
 services:
   server:
-    # Tag `proton_10` (GE-Proton 10-34) des eggs Pterodactyl, épinglé par empreinte : utilisateur
-    # 1000, Proton dans /usr/local/bin, tini en point d'entrée.
-    image: ghcr.io/kuroctl/mirror/parkervcp/steamcmd@sha256:7449885931bb470d6e40c491b4ff80528864bed61fcd31e6fbdf4e3d4bef0627
+    # GE-Proton 10-34 (tag `1-2026.11.01-2`), épinglé par empreinte : utilisateur 1000, Proton dans
+    # /opt/proton (dans le PATH), tini en point d'entrée.
+    image: ghcr.io/kuroctl/runtime-proton-ge10@sha256:1f570659d855d1eac5e88216fcf20a487a15122b39e61ca1a3a25c903c40cff9
     # Arguments du serveur, chacun séparé (`"$@"` dans le script). `?listen` ouvre les ports ;
     # `ServerAdminPassword` reste la dernière option (le reste serait lu comme mot de passe).
     command:

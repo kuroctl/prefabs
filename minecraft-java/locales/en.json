@@ -23,7 +23,7 @@
     "whitelist": { "label": "Whitelist", "help": "Only whitelisted players can join." },
     "loader": {
       "label": "Loader",
-      "help": "Chosen at deployment: switching loaders requires a new server.",
+      "help": "Switching loaders restarts the server, which downloads the new one. The world is kept; mods made for another loader stop loading.",
       "options": { "vanilla": "Vanilla", "paper": "Paper", "fabric": "Fabric", "quilt": "Quilt", "forge": "Forge", "neoforge": "NeoForge" }
     },
     "version": { "label": "Minecraft version", "help": "LATEST, SNAPSHOT or a version number (e.g. 1.21.4)." },

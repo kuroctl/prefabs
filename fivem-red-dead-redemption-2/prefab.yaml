@@ -2,12 +2,12 @@
 # RedM (Red Dead Redemption 2 multijoueur, Cfx.re) : serveur Linux `FXServer`, livré avec sa
 # propre bibliothèque musl (`alpine/`). Installé par Kuro sans script : build épinglé (sha256)
 # puis extraction du `.tar.xz` ; les ressources de base (`cfx-server-data`) viennent d'un commit fixé.
-# Image d'exécution : celle des eggs Pterodactyl (Debian), dont le point d'entrée lit la ligne de
-# lancement dans `STARTUP`. Ce point d'entrée découpe la ligne sur les espaces : ce qui peut en
-# contenir (nom du serveur) passe par `kuro.cfg`, regénéré à chaque démarrage.
+# Image d'exécution : `runtime-base` de Kuro (Debian 13, utilisateur 1000, tini ; ADR-0048) ; le
+# serveur n'a besoin que de sa propre musl. Le nom du serveur passe par `kuro.cfg`, regénéré à
+# chaque démarrage.
 schema: kuro.prefab/v1
 id: redm
-version: 0.2.0
+version: 0.3.0
 category: game
 tags: [redm, rdr2, roleplay]
 authors:
@@ -21,20 +21,37 @@ assets:
   icon: assets/icon.png
   cover: assets/banner.jpg
   thumbnail: assets/thumbnail.jpg
-x-status: "draft: not yet tried on a real node with a Cfx.re licence"
+x-status: "draft: not yet tried on a real node with a Cfx.re licence and the Kuro runtime image"
 # Jeu sur le magasin Steam : le Studio en importe les images (ADR-0039).
 steam: { app: 1174180 }
 
 services:
   server:
-    # Épinglée par empreinte : le tag `yolks:debian` est mis à jour en continu.
-    image: ghcr.io/kuroctl/mirror/ptero-eggs/yolks@sha256:3a31e5b23e671dfa8c0f3487003cc6dc6e2f44b5fac1212e194e0954eac8bd71
+    image: ghcr.io/kuroctl/runtime-base@sha256:1603e0655f391242bd29d081b4906aacdf5489c52da7ab18e4baee368fd73a17
+    # FXServer lancé par sa propre musl, depuis le dossier du serveur ; les valeurs restent des
+    # arguments séparés ("$@"). Sans txAdmin, le serveur charge `server.cfg` ; avec, txAdmin le
+    # gère (port 40120).
+    command:
+      - sh
+      - -c
+      - >-
+        cd /home/container && d=$PWD/alpine &&
+        if [ "$TXADMIN_ENABLE" != "1" ]; then set -- "$@" +exec server.cfg; fi &&
+        exec "$d/opt/cfx-server/ld-musl-x86_64.so.1" --library-path "$d/usr/lib/v8/:$d/lib/:$d/usr/lib/"
+        -- "$d/opt/cfx-server/FXServer" +set citizen_dir "$d/opt/cfx-server/citizen/" "$@"
+      - fxserver
+      - +set
+      - sv_licenseKey
+      - "{{ settings.license }}"
+      - +set
+      - steam_webApiKey
+      - '{{ settings.steam_web_api_key | default("none") }}'
+      - +set
+      - sv_maxplayers
+      - "{{ settings.max_players }}"
     env:
-      # Sans `server.cfg` quand txAdmin est activé : txAdmin gère alors le serveur (port 40120).
-      STARTUP: '$(pwd)/alpine/opt/cfx-server/ld-musl-x86_64.so.1 --library-path "$(pwd)/alpine/usr/lib/v8/:$(pwd)/alpine/lib/:$(pwd)/alpine/usr/lib/" -- $(pwd)/alpine/opt/cfx-server/FXServer +set citizen_dir $(pwd)/alpine/opt/cfx-server/citizen/ +set sv_licenseKey ${FIVEM_LICENSE} +set steam_webApiKey ${STEAM_WEBAPIKEY} +set sv_maxplayers ${MAX_PLAYERS} $( [ "$TXADMIN_ENABLE" = "1" ] || printf %s "+exec server.cfg" )'
-      FIVEM_LICENSE: "{{ settings.license }}"
-      STEAM_WEBAPIKEY: '{{ settings.steam_web_api_key | default("none") }}'
-      MAX_PLAYERS: "{{ settings.max_players }}"
+      # FXServer et txAdmin écrivent sous HOME : sur le volume, la racine étant en lecture seule.
+      HOME: /home/container
       TXADMIN_ENABLE: "{{ settings.txadmin }}"
       TXHOST_TXA_PORT: "{{ ports.txadmin.container }}"
       TXHOST_DATA_PATH: /home/container/txData
@@ -45,14 +62,13 @@ services:
       txadmin: { container: 40120, protocol: tcp, public: true }
     volumes:
       data: { path: /home/container }
-    # Le point d'entrée écrit son identité d'utilisateur (nss_wrapper) dans /tmp.
     writable: [/tmp]
     user: "1000:1000"
 
 install:
   service: server
-  # Image des eggs Pterodactyl pour l'installation : `git` y est, lancé sans root.
-  image: ghcr.io/kuroctl/mirror/ptero-eggs/installers@sha256:084e7a28d9902d054b35bcad7c547bcd3b5739040b9e0f5bfe63bb18ce021423
+  # Image d'installation de Kuro : `git` y est, lancé sans root.
+  image: ghcr.io/kuroctl/installer@sha256:7d63607e2b791c40daf6e3a8da12649e666920d5c4b7f9dc941b95e2187e2b5d
   steps:
     # Build « recommended » 35245 ; une version plus récente = une nouvelle version du prefab.
     - download:

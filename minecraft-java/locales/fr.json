@@ -23,7 +23,7 @@
     "whitelist": { "label": "Liste blanche", "help": "Seuls les joueurs de la liste blanche peuvent se connecter." },
     "loader": {
       "label": "Loader",
-      "help": "Choisi au déploiement : changer de loader demande un nouveau serveur.",
+      "help": "Changer de loader redémarre le serveur, qui télécharge le nouveau. Le monde est gardé ; les mods prévus pour un autre loader cessent de se charger.",
       "options": { "vanilla": "Vanilla", "paper": "Paper", "fabric": "Fabric", "quilt": "Quilt", "forge": "Forge", "neoforge": "NeoForge" }
     },
     "version": { "label": "Version de Minecraft", "help": "LATEST, SNAPSHOT ou un numéro (ex. 1.21.4)." },
